@@ -1,5 +1,5 @@
-import React from "react";
-import { Button, Collapse } from "antd-mobile";
+import React, { useState } from "react";
+import { Button, Collapse, Toast } from "antd-mobile";
 
 const menuItems = [{
   action: "a",
@@ -15,17 +15,35 @@ const menuItems = [{
   title: "与杂货商人交谈"
 }];
 
-const handleClick = async (action: string, times: number) => {
-  const res = await fetch(`/api/${action}?times=${times}`);
-  if (res.ok) {
-    const data = await res.json();
-    console.log(data);
-  } else {
-    throw new Error("请求失败");
-  }
-}
-
 const App: React.FC = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleClick = async (action: string, times: number) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(`/api/${action}?times=${times}`);
+      if (!res.ok) throw new Error("请求失败");
+
+      const data = await res.json();
+      console.log(data);
+      Toast.show({
+        icon: "success",
+        content: `x${times}`,
+      })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "未知错误";
+      Toast.show({
+        icon: "fail",
+        content: message,
+      });
+      console.error(error);
+
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (<>
     <h1>骑马与砍杀：战团</h1>
@@ -34,18 +52,15 @@ const App: React.FC = () => {
       {menuItems.map((item) => {
         return (
           <Collapse.Panel key={item.action} title={item.title}>
-            <Button onClick={() => {
-              handleClick(item.action, 10);
-            }}>x10</Button>
-            <Button onClick={() => {
-              handleClick(item.action, 20);
-            }}>x20</Button>
-            <Button onClick={() => {
-              handleClick(item.action, 50);
-            }}>x50</Button>
-            <Button onClick={() => {
-              handleClick(item.action, 100);
-            }}>x100</Button>
+            {[10, 20, 50, 100].map((times) => (
+              <Button
+                key={times}
+                disabled={isSubmitting}
+                onClick={() => handleClick(item.action, times)}
+              >
+                x{times}
+              </Button>
+            ))}
           </Collapse.Panel>)
       })}
     </Collapse>
