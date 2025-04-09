@@ -3,16 +3,16 @@ import { Button, Collapse, Toast } from "antd-mobile";
 
 const menuItems = [{
   action: "a",
-  title: "与武器商人交谈"
+  title: "与武器商人交易"
 }, {
   action: "b",
-  title: "与盔甲商人交谈"
+  title: "与盔甲商人交易"
 }, {
   action: "c",
-  title: "与马匹商人交谈"
+  title: "与马匹贩子交易"
 }, {
   action: "d",
-  title: "与杂货商人交谈"
+  title: "与杂货商人交易"
 }];
 
 const App: React.FC = () => {
