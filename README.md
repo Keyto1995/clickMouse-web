@@ -1,1 +1,1 @@
-# clickmouse website
+# MouseClick Website
